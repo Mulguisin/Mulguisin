@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
 	name='Mulguisin',
-	version='0.1',
+	version='0.2',
 	license='BSD',
 	description='Mulguisin: Cluster/group finding algorithm',
 	author='Young Ju, Inkyu Park, Sungwook E. Hong, Cristiano G. Sabiu',
