@@ -1,0 +1,4 @@
+h5py
+numba
+numpy
+scipy
