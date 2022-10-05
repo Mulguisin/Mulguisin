@@ -1,7 +1,7 @@
 from time import time
 import numpy as np
-import get_density
-import mgs_code
+#import get_density
+#import mgs_code
 
 class mulguisin:
 	def __init__(self, Rcut, x1, y1, z1):
