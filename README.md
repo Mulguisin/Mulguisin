@@ -1,6 +1,6 @@
 <div align="center">
    <!-- MGS logo -->
-   <img src="https://www.clipartmax.com/png/middle/0-8570_ghosts-cute-halloween-ghost-png.png" alt="Ghosts - Cute Halloween Ghost Png@clipartmax.com">
+   <img src="https://www.clipartmax.com/png/small/0-8570_ghosts-cute-halloween-ghost-png.png" alt="Ghosts - Cute Halloween Ghost Png@clipartmax.com" style="background-color: transparent;">
 </div>
 
 # Mulguisin
@@ -14,6 +14,7 @@ Now, he modify the Mulguisin that can be applied to galaxy data.
 ## Install
 
 The MGS can be install via pip install: 
+
 
 ```
 pip install Mulguisin
@@ -34,6 +35,7 @@ git clone https://github.com/youngju20/Mulguisin.git
 >>> import numpy as np
 >>> data = np.random.random((10,2))
 >>> boundaries = [0,1,0,1]
+>>> Rcut = 0.1
 >>> MGS = mgs_class.mulguisin(Rcut,data[:,0],data[:,1],boundaries=boundaries)
 >>> Nmgs, imgs, clg, clm, cng = MGS.get_mgs()
 >>> Nmgs
