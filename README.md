@@ -1,6 +1,6 @@
 <div align="center">
    <!-- MGS logo -->
-   <img src="https://www.clipartmax.com/png/small/0-8570_ghosts-cute-halloween-ghost-png.png" alt="Ghosts - Cute Halloween Ghost Png@clipartmax.com" style="background-color: transparent;">
+   <img src="./MGS_logo.png" width=300>
 </div>
 
 # Mulguisin
