@@ -1,10 +1,10 @@
 from time import time
 import numpy as np
-#import get_density
-#import mgs_code
+import get_density
+import mgs_code
 
 class mulguisin:
-	def __init__(self, Rcut, x1, y1, z1):
+	def __init__(self, Rcut, x1, y1, z1=None, isort=None, boundaries=None):
 		self.Rcut = Rcut
 		self.x1 = x1
 		self.y1 = y1
@@ -14,23 +14,34 @@ class mulguisin:
 		self.cng = None
 		self.clm = None
 		self.clg = None
-		self.isort = None
+		self.isort = isort
+		self.boundaries = boundaries
 
 	def get_isort(self):
-		positions = np.vstack((self.x1,self.y1,self.z1)).T
+		if self.z1 is None:
+			positions = np.vstack((self.x1,self.y1)).T
+		else:
+			positions = np.vstack((self.x1,self.y1,self.z1)).T
 		print('Calculate Voronoi density')
 		sta = time()
-		den = get_density.voronoi_density(positions)
+		if self.z1 is None:
+			den = get_density.voronoi_2d_density(positions,self.boundaries)
+		else:
+			den = get_density.voronoi_density(positions)
 		end = time()
 		print('Calculation is done. Time = ', end - sta)
 		isort = np.flip(den.argsort())
 		return isort
 
 	def get_mgs(self):
-		isort = self.get_isort()
+		if self.isort is None:
+			self.isort = self.get_isort()
 		print('Calculate MGS')
 		sta = time()
-		self.Nmgs,self.imgs,self.clg,self.clm,self.cng = mgs_code.mgs(self.Rcut, self.x1, self.y1, self.z1, isort)
+		if self.z1 is None:
+			self.Nmgs,self.imgs,self.clg,self.clm,self.cng = mgs_code.mgs2d(self.Rcut, self.x1, self.y1, self.isort)
+		else:
+			self.Nmgs,self.imgs,self.clg,self.clm,self.cng = mgs_code.mgs3d(self.Rcut, self.x1, self.y1, self.z1, self.isort)
 		end = time()
 		print('Calculation is done. Time = ', end - sta)
 		return self.Nmgs, self.imgs, self.clg, self.clm, self.cng
@@ -101,7 +112,7 @@ class mulguisin:
 				ang = self.Get_Angle(self.x1[id_chi],self.y1[id_chi],self.z1[id_chi],self.x1[id_node],self.y1[id_node],self.z1[id_node],self.x1[id_axis],self.y1[id_axis],self.z1[id_axis])
 		return ang
 	
-	def Get_LinkPloarAngle(self,imgs=None,idgal=None):
+	def Get_LinkPolarAngle(self,imgs=None,idgal=None):
 		ang = -1
 		id_chi = self.clg[imgs][idgal]
 		id_mom = self.clg[imgs][0]
