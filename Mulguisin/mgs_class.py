@@ -1,7 +1,9 @@
 from time import time
 import numpy as np
-import get_density
-import mgs_code
+#import get_density
+#import mgs_code
+from . import get_density
+from . import mgs_code
 
 class mulguisin:
 	def __init__(self, Rcut, x1, y1, z1=None, isort=None, boundaries=None):
@@ -26,8 +28,10 @@ class mulguisin:
 		sta = time()
 		if self.z1 is None:
 			den = get_density.voronoi_2d_density(positions,self.boundaries)
+			#den = voronoi_2d_density(positions,self.boundaries)
 		else:
 			den = get_density.voronoi_density(positions)
+			#den = voronoi_density(positions)
 		end = time()
 		print('Calculation is done. Time = ', end - sta)
 		isort = np.flip(den.argsort())
@@ -45,6 +49,24 @@ class mulguisin:
 		end = time()
 		print('Calculation is done. Time = ', end - sta)
 		return self.Nmgs, self.imgs, self.clg, self.clm, self.cng
+
+	def get_link(self):
+		links = np.zeros((1,3))
+		for i in range(self.Nmgs):
+			for j in range(self.cng[i]):
+				id_mom = self.clm[i][j]
+				id_chi = self.clg[i][j]
+				links = np.append(links,[[id_mom,id_chi,i]],axis=0)
+		links = np.delete(links,0,0)
+		return links
+
+	def get_label(self):
+		label = np.full((len(self.x1),), -1)
+		for i in range(self.Nmgs):
+			for j in range(self.cng[i]):
+				label[self.clg[i][j]] = i
+		return label
+		
 
 	def Get_TotLength(self,imgs=None):
 		lsum = 0.

@@ -131,7 +131,7 @@ def area(vor,p,boundaries):
     tri=Delaunay(np.array(new_vertices),qhull_options='Q12 Qs Qz')
     for simplex in tri.simplices:
         area+=triangle_area(new_vertices[simplex[0]],new_vertices[simplex[1]],new_vertices[simplex[2]])
-    print(area)
+    #print(area)
     return area
     
 def voronoi_2d_density(positions,boundaries):
