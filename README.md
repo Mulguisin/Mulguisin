@@ -56,5 +56,19 @@ e.g.) label = [0, 0, 0, 1, 2]. The first data point is belongs to the first larg
 
 ```
 
+### Another case
+* The MGS uses Voronoi tessellation when it estimates density. But, sometimes it cannot calculate Voronoi cell because of several reasons. So, we also provide spherical method to estimate density. The following example shows how to use spherical method.
+
+```python
+>>> import Mulguisin
+>>> import numpy as np
+>>> data = np.random.random((10,3))
+>>> Rcut = 0.1
+>>> radius = 0.5 # This is radius for spherical method
+>>> MGS = Mulguisin.mulguisin(Rcut,data[:,0],data[:,1],data[:,2],spherical=True, radius=radius)
+>>> Nmgs, imgs, clg, clm, cng = MGS.get_mgs()
+>>> Nmgs
+```
+
 More examples are in the [test](test). We provide several jupyter notebooks to test MGS code.
 

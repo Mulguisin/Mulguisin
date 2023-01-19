@@ -3,6 +3,7 @@ from itertools import permutations
 import numpy as np
 from numpy.linalg import det
 from scipy.spatial import Delaunay, Voronoi, distance, voronoi_plot_2d
+from scipy.spatial import cKDTree
 
 
 #----------------------------------
@@ -147,3 +148,14 @@ def voronoi_density(positions):
     for i in range(len(positions)):
         galden[i]=1./vol(galvor,i)
     return galden
+
+def spherical_density(positions,radius):
+    galden=np.zeros((len(positions),))
+    volume = 4.*np.pi*radius*radius*radius/3.
+    tree = cKDTree(positions)
+    for i in range(len(positions)):
+       num_gal = tree.query_ball_point(positions[i], r=radius,return_length=True)
+       galden[i] = num_gal/volume
+    return galden
+       
+    

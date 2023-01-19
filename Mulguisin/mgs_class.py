@@ -6,7 +6,7 @@ from . import get_density
 from . import mgs_code
 
 class mulguisin:
-	def __init__(self, Rcut, x1, y1, z1=None, isort=None, boundaries=None):
+	def __init__(self, Rcut, x1, y1, z1=None, isort=None, boundaries=None, spherical=None, radius=None):
 		self.Rcut = Rcut
 		self.x1 = x1
 		self.y1 = y1
@@ -18,24 +18,36 @@ class mulguisin:
 		self.clg = None
 		self.isort = isort
 		self.boundaries = boundaries
+		self.spherical = spherical
+		self.radius = radius
 
 	def get_isort(self):
-		if self.z1 is None:
-			positions = np.vstack((self.x1,self.y1)).T
+		if self.spherical is None:
+			if self.z1 is None:
+				positions = np.vstack((self.x1,self.y1)).T
+			else:
+				positions = np.vstack((self.x1,self.y1,self.z1)).T
+			print('Calculate Voronoi density')
+			sta = time()
+			if self.z1 is None:
+				den = get_density.voronoi_2d_density(positions,self.boundaries)
+				#den = voronoi_2d_density(positions,self.boundaries)
+			else:
+				den = get_density.voronoi_density(positions)
+				#den = voronoi_density(positions)
+			end = time()
+			print('Calculation is done. Time = ', end - sta)
+			isort = np.flip(den.argsort())
+			return isort
 		else:
 			positions = np.vstack((self.x1,self.y1,self.z1)).T
-		print('Calculate Voronoi density')
-		sta = time()
-		if self.z1 is None:
-			den = get_density.voronoi_2d_density(positions,self.boundaries)
-			#den = voronoi_2d_density(positions,self.boundaries)
-		else:
-			den = get_density.voronoi_density(positions)
-			#den = voronoi_density(positions)
-		end = time()
-		print('Calculation is done. Time = ', end - sta)
-		isort = np.flip(den.argsort())
-		return isort
+			print('Calculate Spherical density')
+			sta = time()
+			den = get_density.spherical_density(positions,self.radius)
+			end = time()
+			print('Calculation is done. Time = ', end - sta)
+			isort = np.flip(den.argsort())
+			return isort
 
 	def get_mgs(self):
 		if self.isort is None:
