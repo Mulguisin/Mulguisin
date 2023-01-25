@@ -6,7 +6,8 @@ from . import get_density
 from . import mgs_code
 
 class mulguisin:
-	def __init__(self, Rcut, x1, y1, z1=None, isort=None, boundaries=None, spherical=None, radius=None):
+	def __init__(self, Rcut, x1, y1, z1=None, isort=None, 
+			boundaries=None, spherical=None, radius=None, weight=None):
 		self.Rcut = Rcut
 		self.x1 = x1
 		self.y1 = y1
@@ -20,6 +21,7 @@ class mulguisin:
 		self.boundaries = boundaries
 		self.spherical = spherical
 		self.radius = radius
+		self.weight = weight
 
 	def get_isort(self):
 		if self.spherical is None:
@@ -39,7 +41,7 @@ class mulguisin:
 			print('Calculation is done. Time = ', end - sta)
 			isort = np.flip(den.argsort())
 			return isort
-		else:
+		elif self.spherical is not None:
 			positions = np.vstack((self.x1,self.y1,self.z1)).T
 			print('Calculate Spherical density')
 			sta = time()
@@ -47,6 +49,11 @@ class mulguisin:
 			end = time()
 			print('Calculation is done. Time = ', end - sta)
 			isort = np.flip(den.argsort())
+			return isort
+		elif self.weight is not None:
+			if len(self.x1) != len(self.weight):
+				raise Exception('The length of weight is not the same as length of data')
+			isort = np.flip(self.weight.argsort())
 			return isort
 
 	def get_mgs(self):
