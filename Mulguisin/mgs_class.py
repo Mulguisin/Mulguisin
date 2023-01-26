@@ -6,55 +6,35 @@ from . import get_density
 from . import mgs_code
 
 class mulguisin:
-	def __init__(self, Rcut, x1, y1, z1=None, isort=None, 
-			boundaries=None, spherical=None, radius=None, weight=None):
+	def __init__(self, Rcut, x1, y1, z1=None, isort=None): 
 		self.Rcut = Rcut
 		self.x1 = x1
 		self.y1 = y1
 		self.z1 = z1
+		self.isort = isort
 		self.Nmgs = None
 		self.imgs = None
 		self.cng = None
 		self.clm = None
 		self.clg = None
-		self.isort = isort
-		self.boundaries = boundaries
-		self.spherical = spherical
-		self.radius = radius
-		self.weight = weight
 
 	def get_isort(self):
-		if self.spherical is None:
-			if self.z1 is None:
-				positions = np.vstack((self.x1,self.y1)).T
-			else:
-				positions = np.vstack((self.x1,self.y1,self.z1)).T
-			print('Calculate Voronoi density')
-			sta = time()
-			if self.z1 is None:
-				den = get_density.voronoi_2d_density(positions,self.boundaries)
-				#den = voronoi_2d_density(positions,self.boundaries)
-			else:
-				den = get_density.voronoi_density(positions)
-				#den = voronoi_density(positions)
-			end = time()
-			print('Calculation is done. Time = ', end - sta)
-			isort = np.flip(den.argsort())
-			return isort
-		elif self.spherical is not None:
+		if self.z1 is None:
+			positions = np.vstack((self.x1,self.y1)).T
+		else:
 			positions = np.vstack((self.x1,self.y1,self.z1)).T
-			print('Calculate Spherical density')
-			sta = time()
-			den = get_density.spherical_density(positions,self.radius)
-			end = time()
-			print('Calculation is done. Time = ', end - sta)
-			isort = np.flip(den.argsort())
-			return isort
-		elif self.weight is not None:
-			if len(self.x1) != len(self.weight):
-				raise Exception('The length of weight is not the same as length of data')
-			isort = np.flip(self.weight.argsort())
-			return isort
+		print('Calculate Voronoi density')
+		sta = time()
+		if self.z1 is None:
+			den = get_density.voronoi_2d_density(positions,self.boundaries)
+			#den = voronoi_2d_density(positions,self.boundaries)
+		else:
+			den = get_density.voronoi_density(positions)
+			#den = voronoi_density(positions)
+		end = time()
+		print('Calculation is done. Time = ', end - sta)
+		isort = np.flip(den.argsort())
+		return isort
 
 	def get_mgs(self):
 		if self.isort is None:
@@ -176,3 +156,55 @@ class mulguisin:
 		dc = (x3-x1)**2 + (y3-y1)**2 + (z3-z1)**2
 		cosalpha = (da**2 + db**2 - dc)/(2.*da*db)
 		return np.arccos(cosalpha)
+
+def mulguisin_type(dentype: str):
+	if dentype == 'voronoi':
+		class mgs_cls(mulguisin):
+			def __init__(self,Rcut,x1,y1,z1=None,isort=None, boundaries=None):
+				super().__init__(Rcut,x1,y1,z1,isort)
+				self.boundaries = boundaries
+				if self.z1 is None and self.boundaries is None:
+					raise Exception('Please define boundaries if you want to use 2D data')
+
+	elif dentype == 'local':
+		class mgs_cls(mulguisin):
+			def __init__(self,Rcut,x1,y1,z1=None,isort=None, radius=None):
+				super().__init__(Rcut,x1,y1,z1,isort)
+				self.radius = radius
+
+			def get_isort(self):
+				if self.z1 is None:
+					positions = np.vstack((self.x1,self.y1)).T
+				else:
+					positions = np.vstack((self.x1,self.y1,self.z1)).T
+				print('Calculate local density')
+				sta = time()
+				if self.z1 is None:
+					den = get_density.spherical_density2d(positions,self.radius)
+				else:
+					den = get_density.spherical_density3d(positions,self.radius)
+				end = time()
+				print('Calculation is doen. Time = ', end - sta)
+				isort = np.flip(den.argsort())
+				return isort
+
+	elif dentype == 'weight':
+		class mgs_cls(mulguisin):
+			def __init__(self,Rcut,x1,y1,z1=None,isort=None, weight=None, sorted=False):
+				super().__init__(Rcut,x1,y1,z1,isort)
+				self.weight = weight
+				self.sorted = sorted
+
+			def get_isort(self):
+				if len(self.x1) != len(self.weight):
+					raise Exception('The length of weight is not the same as length of data')
+				if sorted == False:
+					isort = np.flip(self.weight.argsort())
+				else:
+					isort = self.weight
+				return isort
+
+	else:
+		raise Exception('Please select the type of density calculation')
+
+	return mgs_cls

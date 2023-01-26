@@ -149,13 +149,22 @@ def voronoi_density(positions):
         galden[i]=1./vol(galvor,i)
     return galden
 
-def spherical_density(positions,radius):
+def spherical_density3d(positions,radius):
     galden=np.zeros((len(positions),))
     volume = 4.*np.pi*radius*radius*radius/3.
     tree = cKDTree(positions)
     for i in range(len(positions)):
        num_gal = tree.query_ball_point(positions[i], r=radius,return_length=True)
        galden[i] = num_gal/volume
+    return galden
+
+def spherical_density2d(positions,radius):
+    galden=np.zeros((len(positions),))
+    area = np.pi*radius*radius
+    tree = cKDTree(positions)
+    for i in range(len(positions)):
+       num_gal = tree.query_ball_point(positions[i], r=radius,return_length=True)
+       galden[i] = num_gal/area
     return galden
        
     
