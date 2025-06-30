@@ -3,7 +3,7 @@ from itertools import permutations
 import numpy as np
 from numpy.linalg import det
 from scipy.spatial import Delaunay, Voronoi, distance, voronoi_plot_2d
-from scipy.spatial import cKDTree
+from scipy.spatial import cKDTree, ConvexHull
 
 
 #----------------------------------
@@ -31,10 +31,15 @@ def vol(vor,p):
     vol=0
     for v in vor.regions[vor.point_region[p]]:
         dpoints.append(list(vor.vertices[v]))
-    tri=Delaunay(np.array(dpoints),qhull_options='Q12 Qs Qz')
-    for simplex in tri.simplices:
-        vol+=tetravol(np.array(dpoints[simplex[0]]),np.array(dpoints[simplex[1]]),np.array(dpoints[simplex[2]]),np.array(dpoints[simplex[3]]))
-    return vol
+    #tri=Delaunay(np.array(dpoints),qhull_options='Q12 Qs Qz Qt QJ Ft')
+
+    #for simplex in tri.simplices:
+    #    vol+=tetravol(np.array(dpoints[simplex[0]]),np.array(dpoints[simplex[1]]),np.array(dpoints[simplex[2]]),np.array(dpoints[simplex[3]]))
+
+    hull = ConvexHull(np.array(dpoints), qhull_options="QJ")   # joggle to avoid degeneracy
+    return hull.volume                           # area if pts.shape[1]==2
+
+    #return vol
 
 """
 Below codes are for 2D case. 
@@ -128,12 +133,16 @@ def area(vor,p,boundaries):
     new_vertices = origin_vertice.copy()
     new_vertices = new_vertices + add_vertices
 
-    area = 0
-    tri=Delaunay(np.array(new_vertices),qhull_options='Q12 Qs Qz')
-    for simplex in tri.simplices:
-        area+=triangle_area(new_vertices[simplex[0]],new_vertices[simplex[1]],new_vertices[simplex[2]])
-    #print(area)
-    return area
+    #area = 0
+    #tri=Delaunay(np.array(new_vertices),qhull_options='Q12 Qs Qz Qt QJ Ft')
+    #for simplex in tri.simplices:
+    #    area+=triangle_area(new_vertices[simplex[0]],new_vertices[simplex[1]],new_vertices[simplex[2]])
+    ##print(area)
+    #return area
+
+    hull = ConvexHull(np.array(new_vertices), qhull_options="QJ")   # joggle to avoid degeneracy
+    return hull.volume                           # area if pts.shape[1]==2
+
     
 def voronoi_2d_density(positions,boundaries):
     galvor=Voronoi(positions)
