@@ -42,9 +42,9 @@ class mulguisin:
 		print('Calculate MGS')
 		sta = time()
 		if self.z1 is None:
-			self.Nmgs,self.imgs,self.clg,self.clm,self.cng = mgs_code.mgs2d(self.Rcut, self.x1, self.y1, self.isort)
+			self.Nmgs,self.imgs,self.clg,self.clm,self.cng = mgs_code.mgs2d_tree(self.Rcut, self.x1, self.y1, self.isort)
 		else:
-			self.Nmgs,self.imgs,self.clg,self.clm,self.cng = mgs_code.mgs3d(self.Rcut, self.x1, self.y1, self.z1, self.isort)
+			self.Nmgs,self.imgs,self.clg,self.clm,self.cng = mgs_code.mgs3d_tree(self.Rcut, self.x1, self.y1, self.z1, self.isort)
 		end = time()
 		print('Calculation is done. Time = ', end - sta)
 		return self.Nmgs, self.imgs, self.clg, self.clm, self.cng
