@@ -45,3 +45,16 @@ def test_mgs_3d():
     Nmgs, elapsed = run_3d_example()
     print(f"3D example -> groups: {Nmgs}, time: {elapsed:.6f}s")
     assert Nmgs == 2
+
+
+def test_degree_stats():
+    rng = np.random.default_rng(0)
+    half = 50
+    cluster1 = rng.normal(0.0, 0.05, size=(half, 2))
+    cluster2 = rng.normal(1.0, 0.05, size=(half, 2))
+    data = np.vstack((cluster1, cluster2))
+    mgs = mulguisin(0.3, data[:, 0], data[:, 1], isort=np.arange(2 * half))
+    mgs.get_mgs()
+    avg, mx = mgs.Get_AllDegreeStats()
+    assert np.allclose(avg, [1.96, 1.96])
+    assert mx == [5, 6]
