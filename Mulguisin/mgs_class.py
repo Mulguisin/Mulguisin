@@ -115,6 +115,28 @@ class mulguisin:
 			if self.clm[imgs][i] == self.clg[imgs][idgal]: degree+=1
 		if self.clg[imgs][idgal] != id_mom: degree += 1
 		return degree
+
+	def Get_Degrees(self, imgs=None):
+		"""Return degrees of all points in ``imgs`` cluster."""
+		return [self.Get_Degree(imgs, i) for i in range(self.cng[imgs])]
+
+	def Get_DegreeStats(self, imgs=None):
+		"""Return average and maximum degree of ``imgs`` cluster."""
+		deg = self.Get_Degrees(imgs)
+		if len(deg) == 0:
+			return 0.0, 0
+		arr = np.array(deg)
+		return float(arr.mean()), int(arr.max())
+
+	def Get_AllDegreeStats(self):
+		"""Return average and maximum degree for each cluster."""
+		avg = []
+		maxd = []
+		for i in range(self.Nmgs):
+			a, m = self.Get_DegreeStats(i)
+			avg.append(a)
+			maxd.append(m)
+		return avg, maxd
 	
 	def Get_Branch(self,imgs=None):
 		nbranch = 0
